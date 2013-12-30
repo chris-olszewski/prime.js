@@ -7,7 +7,7 @@ var pg = require('pg').native
 /* Returns next number to be generated */
 
 exports.next_number = function(req, res) {
-	client = new pg.Client({user: 'postgres', password: 'pass', database: 'prime'});
+	client = new pg.Client(connectionString);
 	client.connect(function(err) {
 		if (err) {
 			console.error("Error connecting to PostgreSQL", err);
@@ -27,11 +27,10 @@ exports.next_number = function(req, res) {
 
 exports.update = function(req, res) {
 	number = req.params.number
-	client = new pg.Client({user: 'postgres', password: 'pass', database: 'prime'});
+	client = new pg.Client(connectionString);
 	client.connect(function() {
 		client.query('UPDATE numbers SET prime=$1 WHERE number=$2', [String(req.query.prime), String(number)], function() {
 			res.send("Updated number");
 		});
 	});
-
 };
