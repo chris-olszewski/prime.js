@@ -1,6 +1,6 @@
 
 var pg = require('pg').native
-	, connectionString = process.env.HEROKU_POSTGRES_WHITE_URL || 'postgres://localhost:5432/prime'
+	, connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/prime'
 	, client
 	, query;
 
@@ -28,9 +28,13 @@ exports.next_number = function(req, res) {
 exports.update = function(req, res) {
 	number = req.params.number
 	client = new pg.Client(connectionString);
-	client.connect(function() {
-		client.query('UPDATE numbers SET prime=$1 WHERE number=$2', [String(req.query.prime), String(number)], function() {
-			res.send("Updated number");
-		});
+	client.connect(function(err) {
+		if (err) {
+			console.error("Error connecting to PostgreSQL", err);
+		} else {
+			client.query('UPDATE numbers SET prime=$1 WHERE number=$2', [String(req.query.prime), String(number)], function() {
+				res.send("Updated number");
+			});
+		};
 	});
 };
