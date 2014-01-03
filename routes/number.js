@@ -28,7 +28,22 @@ exports.update = function(req, res) {
 			return console.error("Error fetching client from pool", err);
 		};
 		client.query('UPDATE numbers SET prime=$1 WHERE number=$2', [String(req.query.prime), String(number)], function() {
+			done();
 			res.send("Updated number");
+		});
+	});
+};
+
+/* Lists all numbers */
+
+exports.list = function(req, res) {
+	pg.connect(conString, function(err, client, done) {
+		if (err) {
+			return console.error("Error fetching client from pool", err);
+		};
+		client.query('SELECT number FROM numbers WHERE prime=true', function(err, result) {
+			console.log(result.rows)
+			res.render('list', {list: result.rows});
 			done();
 		});
 	});
